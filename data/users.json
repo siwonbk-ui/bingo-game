@@ -28,5 +28,23 @@
         "name": "User 600999",
         "role": "manager",
         "password": "123456"
+    },
+    {
+        "id": "450880",
+        "name": "Kked",
+        "role": "manager",
+        "password": "123456"
+    },
+    {
+        "id": "001146",
+        "name": "Sabishiyo",
+        "role": "manager",
+        "password": "123456"
+    },
+    {
+        "id": "000568",
+        "name": "kaejung",
+        "role": "manager",
+        "password": "123456"
     }
 ]
