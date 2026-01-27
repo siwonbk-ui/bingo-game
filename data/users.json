@@ -1,0 +1,32 @@
+[
+    {
+        "id": "000000",
+        "name": "System Admin",
+        "role": "admin",
+        "password": "000000"
+    },
+    {
+        "id": "600996",
+        "name": "Pornsit",
+        "role": "manager",
+        "password": "123456"
+    },
+    {
+        "id": "600997",
+        "name": "User 600997",
+        "role": "manager",
+        "password": "123456"
+    },
+    {
+        "id": "600998",
+        "name": "User 600998",
+        "role": "manager",
+        "password": "123456"
+    },
+    {
+        "id": "600999",
+        "name": "User 600999",
+        "role": "manager",
+        "password": "123456"
+    }
+]
