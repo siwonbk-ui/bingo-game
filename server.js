@@ -206,7 +206,10 @@ if (!fs.existsSync(USERS_FILE)) {
         { id: '600996', name: 'Pornsit', role: 'manager', password: '123456' },
         { id: '600997', name: 'User 600997', role: 'manager', password: '123456' },
         { id: '600998', name: 'User 600998', role: 'manager', password: '123456' },
-        { id: '600999', name: 'User 600999', role: 'manager', password: '123456' }
+        { id: '600999', name: 'User 600999', role: 'manager', password: '123456' },
+        { id: '450880', name: 'Kked', role: 'manager', password: '123456' },
+        { id: '001146', name: 'Sabishiyo', role: 'manager', password: '123456' },
+        { id: '000568', name: 'kaejung', role: 'manager', password: '123456' }
     ];
     writeJSON(USERS_FILE, defaultUsers);
     console.log('Initialized users.json');
