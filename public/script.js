@@ -720,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
             allCells[index].classList.add('win-cell');
         });
 
-        const isBlackout = activeIndices.length === TOTAL_CELLS;
+        const isBlackout = activeIndices.length === TOTAL_CELLS; // Ensure TOTAL_CELLS is 81 for 9x9
 
         if (silent) {
             acknowledgedWinCount = currentWinLineCount;
@@ -730,11 +730,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isBlackout && !isBlackoutCelebrated) {
             isBlackoutCelebrated = true;
-            triggerWin(winningCells, "Splendid!!!");
+            triggerWin(winningCells, "SUSTAIN CHAMPION!!!");
         } else if (currentWinLineCount > acknowledgedWinCount) {
             acknowledgedWinCount = currentWinLineCount;
-            triggerWin(winningCells, "BINGO!");
+
+            let title = "Sustain Start!!!";
+            if (currentWinLineCount >= 6) {
+                title = "Advanced Sustain!!!";
+            } else if (currentWinLineCount >= 3) {
+                title = "Bingo!!!";
+            }
+
+            triggerWin(winningCells, title);
         }
+    }
+
+    function closeWinOverlay() {
+        winOverlay.classList.add('hidden');
     }
 
     function triggerWin(winningIndices, titleText = "BINGO!") {
@@ -742,10 +754,17 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
 
         winTitle.textContent = titleText;
-        if (titleText === "Splendid!!!") {
+        if (titleText === "SUSTAIN CHAMPION!!!") {
+            // Special gradient for Champion
             winTitle.style.background = "linear-gradient(to right, #ff00cc, #333399)";
             winTitle.style.webkitBackgroundClip = "text";
         } else {
+            // Default (Amber/Gold gradient from CSS handles this if we remove inline style, but let's reset to allow CSS class to work or set dynamic)
+            // Actually CSS .bingo-text has a default gradient. 
+            // If we want different colors for levels, we can set them here.
+            // For now, let's reset inline style so CSS takes over for "Bingo" etc, OR set specific ones.
+            // User didn't ask for specific colors, but "Splendid" had one.
+            // Let's reset to allow CSS default (Amber) for others.
             winTitle.style.background = "";
             winTitle.style.webkitBackgroundClip = "text";
         }
@@ -757,6 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerFireworks() {
         const duration = 3000;
         const animationEnd = Date.now() + duration;
+        // zIndex 9999 is fine if we disable pointer events in CSS
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
         const random = (min, max) => Math.random() * (max - min) + min;
 
