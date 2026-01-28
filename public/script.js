@@ -401,7 +401,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 cellImages = state.cellImages || {};
                 isGameOver = state.isGameOver || false;
 
-                if (!numbers || numbers.length !== TOTAL_CELLS) {
+                // Static Board Definition (Must match startNewGame)
+                const STATIC_NUMBERS = [17, 2, 1, 2, 7, 13, 16, 3, 17, 7, 18, 16, 20, 11, 16, 13, 12, 12, 5, 6, 7, 5, 15, 20, 11, 1, 9, 10, 16, 1, 14, 19, 5, 17, 4, 10, 3, 2, 6, 9, "FREE", 18, 7, 5, 14, 20, 2, 12, 20, 19, 4, 10, 1, 14, 11, 19, 17, 15, 12, 4, 8, 18, 9, 10, 19, 13, 14, 8, 8, 11, 6, 9, 8, 15, 3, 15, 4, 13, 6, 18, 3];
+
+                // Check if the loaded board matches our new static board
+                const currentBoardStr = JSON.stringify(numbers);
+                const staticBoardStr = JSON.stringify(STATIC_NUMBERS);
+
+                if (!numbers || numbers.length !== TOTAL_CELLS || currentBoardStr !== staticBoardStr) {
+                    // Board mismatch (old user data) -> Force Reset to new board
+                    console.log("Board mismatch detected. Resetting to global static board.");
                     startNewGame(true);
                 } else {
                     renderGrid();
@@ -534,12 +543,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isBlackoutCelebrated = false;
 
         if (regenerateNumbers) {
-            numbers = [];
-            for (let i = 0; i < TOTAL_CELLS; i++) {
-                numbers.push(Math.floor(Math.random() * 20) + 1);
-            }
-            const centerIndex = Math.floor(TOTAL_CELLS / 2);
-            numbers[centerIndex] = "FREE";
+            // Static Board Configuration (1-20 balanced, same for all users)
+            numbers = [17, 2, 1, 2, 7, 13, 16, 3, 17, 7, 18, 16, 20, 11, 16, 13, 12, 12, 5, 6, 7, 5, 15, 20, 11, 1, 9, 10, 16, 1, 14, 19, 5, 17, 4, 10, 3, 2, 6, 9, "FREE", 18, 7, 5, 14, 20, 2, 12, 20, 19, 4, 10, 1, 14, 11, 19, 17, 15, 12, 4, 8, 18, 9, 10, 19, 13, 14, 8, 8, 11, 6, 9, 8, 15, 3, 15, 4, 13, 6, 18, 3];
         }
 
         renderGrid();
@@ -732,16 +737,25 @@ document.addEventListener('DOMContentLoaded', () => {
             isBlackoutCelebrated = true;
             triggerWin(winningCells, "SUSTAIN CHAMPION!!!");
         } else if (currentWinLineCount > acknowledgedWinCount) {
-            acknowledgedWinCount = currentWinLineCount;
 
-            let title = "Sustain Start!!!";
-            if (currentWinLineCount >= 6) {
+            let title = null;
+
+            // Priority: Check higher milestones first
+            if (currentWinLineCount >= 6 && acknowledgedWinCount < 6) {
                 title = "Advanced Sustain!!!";
-            } else if (currentWinLineCount >= 3) {
+            } else if (currentWinLineCount >= 3 && acknowledgedWinCount < 3) {
                 title = "Bingo!!!";
+            } else if (currentWinLineCount >= 1 && acknowledgedWinCount < 1) {
+                title = "Sustain Start!!!";
             }
 
-            triggerWin(winningCells, title);
+            acknowledgedWinCount = currentWinLineCount;
+
+            if (title) {
+                triggerWin(winningCells, title);
+            } else {
+                saveState();
+            }
         }
     }
 
