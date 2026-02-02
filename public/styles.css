@@ -254,6 +254,27 @@ h1 {
     background: rgba(15, 23, 42, 0.5);
     border-radius: 16px;
     border: 1px solid var(--glass-border);
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Custom Scrollbar for Game Board */
+.game-board::-webkit-scrollbar {
+    height: 6px;
+}
+
+.game-board::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.game-board::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 4px;
+}
+
+.game-board::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
 }
 
 .grid-container {
