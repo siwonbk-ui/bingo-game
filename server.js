@@ -59,18 +59,25 @@ cloudinary.config({
 
 // Upload Image Endpoint
 app.post('/api/upload', async (req, res) => {
-    const { userId, image } = req.body;
+    const { userId, image, publicId } = req.body;
 
     if (!userId || !image) {
         return res.status(400).json({ success: false, message: 'Missing userId or image' });
     }
 
     try {
-        // Upload to Cloudinary directly from Base64 string
-        const result = await cloudinary.uploader.upload(image, {
+        const options = {
             folder: `bingo_uploads/${userId}`,
             resource_type: 'image'
-        });
+        };
+
+        if (publicId) {
+            options.public_id = publicId;
+            options.overwrite = true;
+        }
+
+        // Upload to Cloudinary directly from Base64 string
+        const result = await cloudinary.uploader.upload(image, options);
 
         // Return the secure URL
         res.json({ success: true, url: result.secure_url });
