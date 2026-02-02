@@ -334,6 +334,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Export User List (Credentials) ---
+    const btnExportUsers = document.getElementById('btn-export-users');
+    if (btnExportUsers) {
+        btnExportUsers.addEventListener('click', async () => {
+            if (!confirm("Download User List with Passwords (CSV)?")) return;
+
+            try {
+                const res = await fetch('/api/users');
+                const usersList = await res.json();
+
+                const headers = ["User ID", "Password", "Name", "Role"];
+                const rows = [headers];
+
+                usersList.forEach(user => {
+                    rows.push([
+                        `"${user.id}"`,
+                        `"${user.password}"`,
+                        `"${user.name}"`,
+                        user.role
+                    ]);
+                });
+
+                const csvContent = "data:text/csv;charset=utf-8,"
+                    + rows.map(e => e.join(",")).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `bingo_users_credentials_${new Date().toISOString().slice(0, 10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } catch (e) {
+                console.error("Export users failed", e);
+                alert("Failed to export users.");
+            }
+        });
+    }
+
     // --- Admin Logic ---
     btnAdminPanel.addEventListener('click', () => {
         appContainer.classList.add('hidden');

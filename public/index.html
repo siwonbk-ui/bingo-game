@@ -98,6 +98,7 @@
     <div id="admin-container" class="app-container hidden">
         <header>
             <h1>User <span class="accent">Management</span></h1>
+            <button id="btn-export-users" class="btn primary" style="margin-right: 1rem;">Export User List</button>
             <button id="btn-back-game" class="btn secondary">Back to Game</button>
         </header>
 
@@ -165,7 +166,8 @@
         <div class="modal-content">
             <h3>Set Your Password</h3>
             <p>First time login requires setting a 6-digit password.</p>
-            <input type="password" id="setup-new-password" placeholder="New Password (6 digits)" maxlength="6" inputmode="numeric">
+            <input type="password" id="setup-new-password" placeholder="New Password (6 digits)" maxlength="6"
+                inputmode="numeric">
             <div class="modal-actions">
                 <button id="btn-confirm-setup" class="btn primary full-width">Set Password & Login</button>
             </div>
