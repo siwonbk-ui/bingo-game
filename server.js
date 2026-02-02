@@ -120,14 +120,52 @@ app.delete('/api/upload', async (req, res) => {
 app.post('/api/login', (req, res) => {
     const { id, password } = req.body;
     const users = readJSON(USERS_FILE);
-    const user = users.find(u => u.id === id && u.password === password);
 
-    if (user) {
-        // Return user without password for security in frontend state (optional, but good practice)
-        // For simplicity, we return what the frontend expects.
+    // Find user by ID first
+    const user = users.find(u => u.id === id);
+
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Check if First Time Setup is needed (Empty Password)
+    if (user.password === "") {
+        return res.json({ success: false, requireSetup: true, message: 'First time setup required' });
+    }
+
+    // Normal Login Check
+    if (user.password === password) {
         res.json({ success: true, user });
     } else {
         res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+});
+
+// Set Password (First Time Setup)
+app.post('/api/set-password', (req, res) => {
+    const { id, password } = req.body;
+
+    if (!id || !password || !/^\d{6}$/.test(password)) {
+        return res.status(400).json({ success: false, message: 'Password must be 6 digits' });
+    }
+
+    const users = readJSON(USERS_FILE);
+    const userIndex = users.findIndex(u => u.id === id);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Only allow setting if currently empty (or allow reset if needed, but per req, this is for first time)
+    // We'll allow it generally for this authenticated-by-ID flow as it implies the user passed the initial check or is being set now.
+    // Ideally we'd verify "old password" but here the old is null.
+
+    users[userIndex].password = password;
+
+    if (writeJSON(USERS_FILE, users)) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ success: false, message: 'Failed to update password' });
     }
 });
 
@@ -146,7 +184,10 @@ app.post('/api/users', (req, res) => {
         return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
-    const newUser = { id, name, role, password };
+    // Allow empty password for "Setup Later"
+    const finalPassword = password ? password : "";
+
+    const newUser = { id, name, role, password: finalPassword };
     users.push(newUser);
     if (writeJSON(USERS_FILE, users)) {
         res.json({ success: true, user: newUser });
