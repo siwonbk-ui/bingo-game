@@ -153,12 +153,62 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('keydown', updateLastActive);
     }
 
+    // --- Setup Password Elements ---
+    const setupModal = document.getElementById('setup-password-modal');
+    const setupPasswordInput = document.getElementById('setup-new-password');
+    const btnConfirmSetup = document.getElementById('btn-confirm-setup');
+    let setupUserId = null; // Store temporarily
+
+    // --- Setup Logic ---
+    btnConfirmSetup.addEventListener('click', async () => {
+        const newPassword = setupPasswordInput.value.trim();
+        if (!/^\d{6}$/.test(newPassword)) {
+            alert("Password must be 6 digits (0-9).");
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/set-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: setupUserId, password: newPassword })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // Auto login after setup
+                userIdInput.value = setupUserId;
+                userPasswordInput.value = newPassword;
+                setupModal.classList.add('hidden');
+                handleLogin(); // Retry login with new credentials
+            } else {
+                alert("Setup Failed: " + data.message);
+            }
+        } catch (e) {
+            console.error("Setup error", e);
+            alert("Connection error during setup.");
+        }
+    });
+
+
     async function handleLogin() {
         const inputId = userIdInput.value.trim();
         const inputPassword = userPasswordInput.value.trim();
 
-        if (!inputId || !inputPassword) {
-            loginError.textContent = "Please enter ID and Password.";
+        // Allow empty password if it's potentially a first-time login check
+        // but generally backend handles matching. If user leaves UI blank, maybe they think...
+        // Actually, for first time, they might try to login with JUST ID?
+        // User said: "User ID but Pass... User set Pass themselves".
+        // Let's assume they might enter just ID or ID + dummy pass. 
+        // But backend `login` needs user match.
+        // Wait, if password IS empty on server, `login` checks:
+        // if (user.password === "") -> return requireSetup.
+        // So frontend MUST send ID. Password sent doesn't matter much IF backend ignores it for the check?
+        // logic in backend was: `if (user.password === "") return requireSetup`.
+        // So we just need to send the ID.
+
+        if (!inputId) {
+            loginError.textContent = "Please enter ID.";
             return;
         }
 
@@ -170,6 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await response.json();
+
+            if (data.requireSetup) {
+                setupUserId = inputId;
+                setupModal.classList.remove('hidden');
+                setupPasswordInput.value = '';
+                setupPasswordInput.focus();
+                return;
+            }
 
             if (data.success) {
                 currentUser = data.user;
@@ -305,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const role = newUserRoleSelect.value;
 
         if (!/^\d{6}$/.test(id)) return alert('ID must be 6 digits');
-        if (!password) return alert('Please enter a password');
+        // Removed Password check to allow empty (setup later)
         if (!name) return alert('Please enter a name');
 
         try {
