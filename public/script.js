@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSave = document.getElementById('btn-save');
     const winOverlay = document.getElementById('win-overlay');
     const winTitle = document.getElementById('win-title');
-    const btnPlayAgain = document.getElementById('btn-play-again');
+
     const btnContinueGame = document.getElementById('btn-continue-game');
     const toast = document.getElementById('toast');
     const controlsDiv = document.querySelector('.controls');
@@ -550,10 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    btnPlayAgain.addEventListener('click', () => {
-        closeWinOverlay();
-        startNewGame(true);
-    });
+
 
     btnContinueGame.addEventListener('click', () => {
         closeWinOverlay();
