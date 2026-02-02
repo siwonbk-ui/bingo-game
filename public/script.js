@@ -300,11 +300,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 let gameStarted = "No";
                 let imagesCount = 0;
                 let bingoStatus = "Playing";
+                let winTitle = "-";
 
                 if (state) {
                     gameStarted = "Yes";
-                    imagesCount = state.cellImages ? Object.keys(state.cellImages).length : 0;
-                    bingoStatus = state.isGameOver ? "WINNER!" : "Playing";
+                    // Count uploaded images
+                    const uploadedIndices = state.cellImages ? Object.keys(state.cellImages).map(Number) : [];
+                    imagesCount = uploadedIndices.length;
+
+                    // --- Calculate Win Lines ---
+                    const GRID_SIZE = 9;
+                    const TOTAL_CELLS = 81;
+                    let lineCount = 0;
+
+                    const isWin = (indices) => indices.every(idx => uploadedIndices.includes(idx));
+
+                    // Rows
+                    for (let r = 0; r < GRID_SIZE; r++) {
+                        const rowIndices = [];
+                        for (let c = 0; c < GRID_SIZE; c++) rowIndices.push(r * GRID_SIZE + c);
+                        if (isWin(rowIndices)) lineCount++;
+                    }
+                    // Cols
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        const colIndices = [];
+                        for (let r = 0; r < GRID_SIZE; r++) colIndices.push(r * GRID_SIZE + c);
+                        if (isWin(colIndices)) lineCount++;
+                    }
+                    // Diagonals
+                    const d1 = [], d2 = [];
+                    for (let i = 0; i < GRID_SIZE; i++) {
+                        d1.push(i * GRID_SIZE + i);
+                        d2.push(i * GRID_SIZE + (GRID_SIZE - 1 - i));
+                    }
+                    if (isWin(d1)) lineCount++;
+                    if (isWin(d2)) lineCount++;
+
+                    // Determine Title based on Line Count
+                    if (imagesCount === TOTAL_CELLS) {
+                        winTitle = "SUSTAIN CHAMPION (Full)";
+                    } else if (lineCount >= 6) {
+                        winTitle = `Advanced Sustain (${lineCount} Lines)`;
+                    } else if (lineCount >= 3) {
+                        winTitle = `Bingo (${lineCount} Lines)`;
+                    } else if (lineCount >= 1) {
+                        winTitle = `Sustain Start (${lineCount} Line)`;
+                    } else {
+                        winTitle = "Playing";
+                    }
+
+                    bingoStatus = winTitle;
                 }
 
                 rows.push([
