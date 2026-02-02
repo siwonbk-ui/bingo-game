@@ -531,6 +531,27 @@ h1 {
     color: var(--text-primary);
 }
 
+
+.modal-content input[type="text"],
+.modal-content input[type="password"] {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-family: 'Outfit';
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
 /* File Input */
 input[type="file"] {
     display: block;
