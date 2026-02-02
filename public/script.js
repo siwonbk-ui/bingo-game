@@ -311,9 +311,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     // --- Calculate Win Lines ---
                     const GRID_SIZE = 9;
                     const TOTAL_CELLS = 81;
+                    const FREE_CELL_INDEX = 40; // Center of 9x9 (Index 40)
                     let lineCount = 0;
 
-                    const isWin = (indices) => indices.every(idx => uploadedIndices.includes(idx));
+                    const isWin = (indices) => indices.every(idx =>
+                        idx === FREE_CELL_INDEX || uploadedIndices.includes(idx)
+                    );
 
                     // Rows
                     for (let r = 0; r < GRID_SIZE; r++) {
