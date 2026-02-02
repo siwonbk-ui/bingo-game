@@ -615,11 +615,16 @@ document.addEventListener('DOMContentLoaded', () => {
             btnConfirmUpload.innerText = "Uploading...";
 
             try {
+                const index = currentSelectedCell.dataset.index;
                 // Upload to Server
                 const res = await fetch('/api/upload', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUser.id, image: currentUploadedImage })
+                    body: JSON.stringify({
+                        userId: currentUser.id,
+                        image: currentUploadedImage,
+                        publicId: index
+                    })
                 });
 
                 const data = await res.json();
